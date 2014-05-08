@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 /*
 |--------------------------------------------------------------------------
 | Register The Laravel Class Loader
@@ -32,6 +34,10 @@ ClassLoader::addDirectories(array(
 */
 
 Log::useFiles(storage_path().'/logs/laravel.log');
+
+App::error(function(ModelNotFoundException $e) {
+    return Redirect::to('decks/create')->withInput()->withErrors(['Please double check the card names!']);
+});
 
 /*
 |--------------------------------------------------------------------------

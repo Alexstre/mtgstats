@@ -27,7 +27,7 @@
                 <div class="form-group">
                     <label class="col-md-4 control-label" for="event">Event</label>
                     <div class="col-md-4">
-                        {{ Form::select('event', $all_events, Input::old('events'), array('class'=>'form-control', 'id'=>'event')) }}
+                        {{ Form::select('event', $all_events, Input::old('event'), array('class'=>'form-control', 'id'=>'event')) }}
                         <p class="alert-danger">{{ $errors->first('event') }}</p>
                     </div>
                 </div>
@@ -36,7 +36,7 @@
                     <label class="col-md-4 control-label" for="decklist">Deck List</label>
                     <div class="col-md-4">
                         {{ Form::textarea('decklist', '', array('class'=>'form-control', 'rows'=>10, 'id'=>'decklist')) }}
-                        <p class="alert-danger">{{ $errors->first('decklist') }}</p>
+                        <p class="alert-danger">{{ $errors->first() }}</p>
                         <p class="help-block">One unique card per line. Skip a line to start sideboard. Example:</p>
                         <p class="help-block">4 Thoughseize<br>56 Swamps<br><br>15 Forest</p>
                     </div>

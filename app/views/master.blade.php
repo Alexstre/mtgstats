@@ -16,6 +16,7 @@
                 <li><a href="{{ URL::to('decks') }}">Decks</a></li>
                 <li><a href="{{ URL::to('cards') }}">Cards</a></li>
                 <li><a href="{{ URL::to('events/create') }}">Submit an Event</a>
+                <li><a href="{{ URL::to('decks/create') }}">Submit a Deck</a>
             </ul>
         </nav>
 

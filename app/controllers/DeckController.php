@@ -24,7 +24,7 @@ class DeckController extends \BaseController {
 	 */
 	public function create()
 	{
-		$events = DB::table('events')->orderBy('played_on', 'desc')->lists('name', 'played_on');
+		$events = DB::table('events')->orderBy('played_on', 'desc')->lists('name', 'name');
 		return View::make('decks.create', array('all_events'=>$events));
 	}
 
@@ -51,31 +51,45 @@ class DeckController extends \BaseController {
     	}
 
     	else {
-    		/*
     		$deck = Deck::create(array(
     			'meta' => Input::get('meta'),
     			'player' => Input::get('player')
-    		));*/
+    		));
     		
     		//$deck->event = Input::get('event');
     		//$deck->decklist = Input::get('decklist');
 
-			$cardNames = array();
-
+    		/* Pairing the deck with its cards */
+    		$maindeck = true;
+			$cardsSoFar = 0; // We'll use this to check when sideboard starts
     		foreach(explode("\n", Input::get('decklist')) as $line) {
     			$card = preg_split('/(?<=\d) (?=[a-z])|(?<=[a-z])(?=\d)/i', $line);
     			if (isset($card[1])) {  /* Card goes in the main deck */
-    				array_push($cardNames, $card[1]);
-    				/*echo 'Looking for ' . $card[1];
-    				$cardObj = Card::where('name', 'LIKE', $card[1])->select('id', 'name')->first();
-    				var_dump($cardObj);*/
+    				$cardName = trim($card[1], "\r");
+    				$cardObj = Card::where('name', '=', $cardName)->take(1)->get(); // Probably not the best way to do this?
+    				if ($cardObj->count() == 0) { // Couldn't find the card abandon ship!
+    					$deck->delete();
+    					return Redirect::to('decks/create')->withInput()->withErrors(['Some of those cards don\'t look right']);
+    				}
+    				foreach($cardObj as $c) {  
+    					// $c->id is the card's id, $card[0] is the amount
+    					if (!$c->id) { var_dump("Couldn't find this card"); }
+    					if ($cardsSoFar >= 60) $maindeck = false;
+    					$c->decks()->attach($deck->id, array('amount' => $card[0], 'maindeck' => $maindeck));
+    					$cardsSoFar += $card[0];
+    				}
     			}
     		}
-			
-			$results = Card::whereIn('name', $cardNames)->get();
-			var_dump($results);
-    		
-    		//$event->save();
+
+    		/* Now we need to pair the event with the deck */
+    		/* This way requires event names to be unique, might be a better way? */
+    		/* No need for as much validation here since the values are pulled from the DB */
+    		$eventName = Input::get('event');
+    		$eventObj = Event::where('name', '=', $eventName)->take(1)->get();
+    		foreach($eventObj as $e) {
+    			$deck->events()->attach($e->id);
+    		}
+
 
     		Session::flash('message', 'Sucess!');
     		//return Redirect::to('decks');
