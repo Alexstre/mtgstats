@@ -4,7 +4,7 @@ use App\Event;
 
 class DeckController extends \BaseController {
 
-	protected $layout = "master";
+	protected $layout = "base";
 	/**
 	 * Display a listing of the resource.
 	 *
@@ -64,19 +64,18 @@ class DeckController extends \BaseController {
 			$cardsSoFar = 0; // We'll use this to check when sideboard starts
     		foreach(explode("\n", Input::get('decklist')) as $line) {
     			$card = preg_split('/(?<=\d) (?=[a-z])|(?<=[a-z])(?=\d)/i', $line);
-    			if (isset($card[1])) {  /* Card goes in the main deck */
+    			if (isset($card[1])) { 
     				$cardName = trim($card[1], "\r");
+                    $cardCount = ($card[0] ? $card[0] : 1);
     				$cardObj = Card::where('name', '=', $cardName)->take(1)->get(); // Probably not the best way to do this?
     				if ($cardObj->count() == 0) { // Couldn't find the card abandon ship!
     					$deck->delete();
-    					return Redirect::to('decks/create')->withInput()->withErrors(['Some of those cards don\'t look right']);
+    					return Redirect::to('decks/create')->withInput()->withErrors(["Can't find " . $cardName]);
     				}
     				foreach($cardObj as $c) {  
-    					// $c->id is the card's id, $card[0] is the amount
-    					if (!$c->id) { var_dump("Couldn't find this card"); }
     					if ($cardsSoFar >= 60) $maindeck = false;
     					$c->decks()->attach($deck->id, array('amount' => $card[0], 'maindeck' => $maindeck));
-    					$cardsSoFar += $card[0];
+    					$cardsSoFar += $cardCount;
     				}
     			}
     		}
@@ -92,7 +91,7 @@ class DeckController extends \BaseController {
 
 
     		Session::flash('message', 'Sucess!');
-    		//return Redirect::to('decks');
+    		return Redirect::to('decks');
     	}
 	}
 

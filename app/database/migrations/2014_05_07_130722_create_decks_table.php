@@ -18,6 +18,7 @@ class CreateDecksTable extends Migration {
 
 			$table->string('player');
 			$table->string('meta');
+			$table->boolean('draft')->default(true);
 
 			$table->timestamps();
 		});

@@ -33,15 +33,16 @@ App::after(function($request, $response)
 |
 */
 
-Route::filter('auth', function()
-{
-	if (Auth::guest()) return Redirect::guest('login');
+Route::filter("auth", function () {
+    if (Auth::guest()) {
+        return Redirect::route("user/login");
+    }
 });
 
-
-Route::filter('auth.basic', function()
-{
-	return Auth::basic();
+Route::filter("admin", function () {
+    if (! Auth::user()->admin) {
+        return App::abort(401, 'Oh no you didn\'t');
+    }
 });
 
 /*

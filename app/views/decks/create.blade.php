@@ -1,4 +1,4 @@
-@extends('master')
+@extends('base')
 @section('content')
     {{ Form::open(array('action' => 'DeckController@store', 'class'=>'form-horizontal')) }}
         <fieldset>

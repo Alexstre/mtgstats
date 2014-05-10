@@ -19,7 +19,7 @@ class CreateCardsTable extends Migration {
 			$table->string('name');
 			$table->string('set');
 			$table->string('type');
-			$table->string('manacost');
+			$table->string('manacost')->nullable();
 			$table->integer('power')->nullable();
 			$table->integer('toughness')->nullable();
 		});

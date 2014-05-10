@@ -11,4 +11,8 @@ class Card extends Eloquent {
                 ->orderBy('pivot_maindeck', 'desc');
     }
 
+    // CARD INFO STUFF ------------------------
+    public function scopeAmountSum($query) {
+        return $query->select(DB::raw('sum(amount) as amount_sum'));
+    }
 }

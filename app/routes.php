@@ -13,9 +13,49 @@
 
 use App\Event;
 
-Route::get('/', function() {
-	return View::make('hello');
+Route::any('/', [
+    "as" => "events/index",
+    "uses" => "EventController@index"
+]);
+
+Route::group(["before"=>"auth"], function () {
+
+    Route::any('/profile', [
+        "as" => "user/profile",
+        "uses" => "UserController@profile"
+    ]);
+
+    Route::any("/logout", [
+        "as" => "user/logout",
+        "uses" => "UserController@logout"
+    ]);
+
 });
+
+Route::any("/request", [
+    "as" => "user/request",
+    "uses" => "UserController@request"
+]);
+
+Route::any("/reset/{token}", [
+    "as" => "user/reset",
+    "uses" => "UserController@reset"
+]);
+
+Route::when('*/create', 'auth');
+
+Route::when('*/activate', array('auth', 'admin'));
+
+Route::any('/admin', array(
+    'before'=>'admin',
+    'as' => 'admin',
+    'uses' => 'AdminController@index'
+));
+
+Route::any('events/{id}/activate', array(
+    'before' => 'admin',
+    'uses' => 'EventController@activate'
+));
 
 Route::resource('events', 'EventController');
 Route::resource('decks', 'DeckController');

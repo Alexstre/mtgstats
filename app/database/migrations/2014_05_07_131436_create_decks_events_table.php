@@ -18,8 +18,7 @@ class CreateDecksEventsTable extends Migration {
 
 			$table->integer('deck_id');
 			$table->integer('event_id');
-
-			$table->timestamps();
+			$table->integer('finish');
 		});
 	}
 

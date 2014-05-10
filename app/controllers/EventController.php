@@ -4,7 +4,7 @@ use App\Event;
 
 class EventController extends \BaseController {
 
-	protected $layout = "master";
+	protected $layout = "base";
 	/**
 	 * Display a listing of the resource.
 	 *
@@ -12,8 +12,8 @@ class EventController extends \BaseController {
 	 */
 	public function index()
 	{
-		$events = Event::all();
-		return $this->layout->content = View::make('events.index')->with('events', $events);
+		$events = Event::where('draft', '=', false)->get();
+		return View::make('events/index')->with('events', $events);
 	}
 
 
@@ -24,7 +24,7 @@ class EventController extends \BaseController {
 	 */
 	public function create()
 	{
-		return View::make('events.create');
+		return View::make('events/create');
 	}
 
 
@@ -38,7 +38,7 @@ class EventController extends \BaseController {
 		/* Validation first */
 		$rules = array(
         	'name' => array('required', 'unique:events,name'),
-        	'played_on' => array('required')
+        	'played_on' => array('required'),
     	);
 
     	$validation = Validator::make(Input::all(), $rules);
@@ -51,6 +51,7 @@ class EventController extends \BaseController {
     		$event = new Event;
     		$event->name = Input::get('name');
     		$event->played_on = Input::get('played_on');
+    		$event->draft = true;
     		$event->save();
 
     		Session::flash('message', 'Sucess!');
@@ -104,6 +105,20 @@ class EventController extends \BaseController {
 	public function destroy($id)
 	{
 		//
+	}
+
+	public function activate($id) {
+		if (Auth::user()->admin) {
+			$event = Event::find($id);
+			$event->draft = false;
+			$event->save();
+			Session::flash('message', 'The event was activated and will now be available.');
+			Redirect::to('events');
+		}
+		else {
+			Session::flash('error', 'Woah there cowboy!');
+			Redirect::to('events');
+		}
 	}
 
 
