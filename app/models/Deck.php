@@ -1,8 +1,21 @@
 <?php
 
+use Cviebrock\EloquentSluggable\SluggableInterface;
+use Cviebrock\EloquentSluggable\SluggableTrait;
+
 class Deck extends Eloquent {
+    use SluggableTrait;
 
     protected $fillable = array('player', 'meta');
+    
+    protected $sluggable = array(
+        "build_from" => "metaname",
+        "save_to" => "slug",
+    );
+    
+    public function getMetanameAttribute() {
+        return $this->meta . ' ' . $this->player;
+    }
 
     // RELATIONSHIPS ----------------------------
     public function cards() {
@@ -11,7 +24,7 @@ class Deck extends Eloquent {
     }
 
     public function events() {
-        return $this->belongsToMany('App\Event', 'decks_events', 'deck_id', 'event_id');
+        return $this->belongsToMany('App\Event', 'decks_events', 'deck_id', 'event_id', 'finish');
     }
 
 }

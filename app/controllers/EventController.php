@@ -66,9 +66,9 @@ class EventController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
+	public function show($slug)
 	{
-		return View::make('events.show')->with('events', Event::where('id', '=', $id)->with('decks')->get());
+		return View::make('events.show')->with('events', Event::where('slug', '=', $slug)->with('decks')->get());
 	}
 
 

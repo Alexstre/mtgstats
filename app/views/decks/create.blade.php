@@ -33,6 +33,14 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="col-md-4 control-label" for="event">Finish</label>
+                    <div class="col-md-4">
+                        {{ Form::text('finish', Input::old('finish'), array('class'=>'form-control input-md', 'placeholder'=>'1')) }}
+                        <p class="alert-danger">{{ $errors->first('finish') }}</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="col-md-4 control-label" for="decklist">Deck List</label>
                     <div class="col-md-4">
                         {{ Form::textarea('decklist', '', array('class'=>'form-control', 'rows'=>10, 'id'=>'decklist')) }}

@@ -21,8 +21,8 @@
                                 <td>{{ $value->meta }}</td>
                                 <td>{{ $value->player }}</td>
                                 <td>
-                                    <a class="btn btn-small btn-success" href="{{ URL::to('events/' . $value->slug) }}">Show this Event</a>
-                                    <a class="btn btn-small btn-info" href="{{ URL::to('events/' . $value->id . '/edit') }}">Edit this Event</a>
+                                    <a class="btn btn-small btn-success" href="{{ URL::to('decks/' . $value->slug) }}">Show this Deck</a>
+                                    <a class="btn btn-small btn-info" href="{{ URL::to('decks/' . $value->id . '/edit') }}">Edit this Deck</a>
                                 </td>
                             </tr>
                         @endforeach

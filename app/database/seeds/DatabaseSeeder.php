@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder {
 		Eloquent::unguard();
 
 		$this->call('UserSeeder'); // Creates Admin
-		$this->call('ThisAppSeeder'); // Adds some cards, 2 decks and an event
+		//$this->call('ThisAppSeeder'); // Adds some cards, 2 decks and an event
 		$this->command->info('Seeding is done.'); // done seeding, show on command line
 	}
 

@@ -57,6 +57,19 @@ Route::any('events/{id}/activate', array(
     'uses' => 'EventController@activate'
 ));
 
+Route::any('/cards/reslug', array(
+    'uses' => 'CardController@reslugCards'
+));
+
+Route::any('/decks/reslug', array(
+    'uses' => 'DeckController@reslugDecks'
+));
+
+Route::any('/login', array(
+    'as' => 'user/login',
+    'uses' => 'UserController@login'
+));
+
 Route::resource('events', 'EventController');
 Route::resource('decks', 'DeckController');
 Route::resource('cards', 'CardController');

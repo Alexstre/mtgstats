@@ -41,7 +41,8 @@ class DeckController extends \BaseController {
         	'meta' => array('required'),
         	'player' => array('required'),
         	'event' => array('required'),
-        	'decklist' => array('required')
+        	'decklist' => array('required'),
+            'finish' => array('required')
     	);
 
     	$validation = Validator::make(Input::all(), $rules);
@@ -53,11 +54,8 @@ class DeckController extends \BaseController {
     	else {
     		$deck = Deck::create(array(
     			'meta' => Input::get('meta'),
-    			'player' => Input::get('player')
+    			'player' => Input::get('player'),
     		));
-    		
-    		//$deck->event = Input::get('event');
-    		//$deck->decklist = Input::get('decklist');
 
     		/* Pairing the deck with its cards */
     		$maindeck = true;
@@ -86,7 +84,7 @@ class DeckController extends \BaseController {
     		$eventName = Input::get('event');
     		$eventObj = Event::where('name', '=', $eventName)->take(1)->get();
     		foreach($eventObj as $e) {
-    			$deck->events()->attach($e->id);
+    			$deck->events()->attach($e->id, array('finish'=>Input::get('finish')));
     		}
 
 
@@ -102,11 +100,9 @@ class DeckController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
+	public function show($slug)
 	{
-		return View::make('decks.show')
-			->with('decks', Deck::where('id', '=', $id)
-				->with('cards')->get());
+		return View::make('decks.show')->with('decks', Deck::where('slug', '=', $slug)->with('cards')->get());
 	}
 
 
@@ -144,6 +140,16 @@ class DeckController extends \BaseController {
 	{
 		//
 	}
+
+    public function reslugDecks()
+    {
+        $zz = Deck::all();
+        foreach ($zz as $z) {
+            $z->resluggify();
+            $z->save();
+            echo $z->slug;
+        }
+    }
 
 
 }

@@ -4,7 +4,7 @@
 <div class="col-md-10">
     <div class="row">
         @foreach($decks as $deck)
-        <h2>{{ $deck->meta }}<small>by {{ $deck->player }}</small></h2>
+        <h2>{{ $deck->meta }} <small>{{ $deck->player }}</small></h2>
         <div class="col-md-6">
             <div class="content-box-large">
                     <div class="panel-heading"><div class="panel-title">Main Deck</div></div>
