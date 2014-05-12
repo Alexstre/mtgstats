@@ -27,4 +27,8 @@ class Deck extends Eloquent {
         return $this->belongsToMany('App\Event', 'decks_events', 'deck_id', 'event_id', 'finish');
     }
 
+    public function results() {
+        return $this->hasMany('Result', 'decks_events_results', 'deck_id1', 'deck_id2', 'deck_score1', 'deck_score2');
+    }
+
 }

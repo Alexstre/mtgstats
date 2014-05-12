@@ -16,21 +16,35 @@ class CardController extends \BaseController {
 		/* Let's find the top 15 cards */
 		$top = array();
 		$cards_url = array();
+
+        /* This is the old way of doing it. It doesn't return Card objects so it requires a more queries down the line
+        and although it looks cleaner I think the other way is better.
 		$s = DB::table('cards_decks')->select(DB::raw('sum(amount) as card_count, card_id'))
 			->groupBy('card_id')->orderBy('card_count', 'desc')
-			->take(20)->get();
+			->take(20)->get();*/
+
+        $s = DB::table('cards')->join('cards_decks', 'cards.id', '=', 'card_id')
+                               ->select('cards.*', DB::raw('Sum(Distinct cards_decks.amount) as total_card'))
+                               ->groupBy('card_id')->orderBy('total_card', 'desc')
+                               ->take(20)->get(); // TODO: Add ->remember(60)
+        $cardsInMeta = DB::table('cards_decks')->sum('amount');
 		foreach ($s as $b) {
-			$c = Card::find($b->card_id);
-			if ($c !== null) {
-				if (!Card::isBasicLand($c)) array_push($top, $c);
-				array_push($cards_url, Card::grabImage($c->name));
+			//$c = Card::find($b->id); // The old way
+			if ($b !== null) {
+				if (!Card::isBasicLand($b)) {
+                    array_push($top, $b);
+                    array_push($cards_url, Card::grabImage($b->name));
+                    $b->pct = round($b->total_card / $cardsInMeta * 100, 2);
+                }
 			}
 			else {
-				/* Big problem with card_id not matching the id's in cards_decks */
-			}
+                Log::error('Card IDs are all fucked up.');
+                App::abort(403, 'Unauthorized');
+            } // Big problem with card_id not matching the id's in cards_decks
 		}
 
 		return $this->layout->content = View::make('cards.index')->with(array(
+            'cardsMeta' => $cardsInMeta,
 			'top15' => $top,
 			'images' => $cards_url,
 		));

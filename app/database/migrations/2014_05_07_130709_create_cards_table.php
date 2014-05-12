@@ -12,16 +12,15 @@ class CreateCardsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('cards', function(Blueprint $table)
-		{
-			$table->increments('id');
-			$table->timestamps();
-			$table->string('name');
-			$table->string('set');
-			$table->string('type');
-			$table->string('manacost')->nullable();
-			$table->integer('power')->nullable();
-			$table->integer('toughness')->nullable();
+		Schema::create('cards', function(Blueprint $table) {
+            $table->increments('id');
+            $table->timestamps();
+            $table->string('name');
+            $table->string('set');
+            $table->string('type');
+            $table->string('manacost')->nullable();
+            $table->integer('power')->nullable();
+            $table->integer('toughness')->nullable();
 		});
 	}
 

@@ -4,14 +4,16 @@
         <fieldset>
             <legend>Create a Deck</legend>
             <p>You <strong>must</strong> add the deck to an event that was previously created.
-                In order to create an event visit the <a href="{{ URL::to('decks/create') }}">Create a Deck</a> page.
+                In order to create an event visit the <a href="{{ URL::to('events/create') }}">Create an Event</a> page.
                 Once it's added, the event will show up in the drop list below.</p>
             <div class="well">
                 <div class="form-group">
-                    <label class="col-md-4 control-label" for="meta">Meta</label>
+                    <label class="col-md-4 control-label" for="meta">Archetype<br>(or new)</label>
                     <div class="col-md-4">
+                        {{ Form::select('event', $all_events, Input::old('event'), array('class'=>'form-control', 'id'=>'event')) }}
+                        <p class="alert-danger">{{ $errors->first('meta') }}</p>
                         {{ Form::text('meta', Input::old('meta'), array('class'=>'form-control input-md', 'placeholder'=>'U/W Control')) }}
-                        <p class="help-block">See this link for a list of current meta</p>
+                        <p class="help-block">If you're adding an archetype that's not in the list, use this instead. Otherwise, leave empty.</p>
                         <p class="alert-danger">{{ $errors->first('meta') }}</p>
                     </div>
                 </div>
@@ -33,20 +35,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="col-md-4 control-label" for="event">Finish</label>
-                    <div class="col-md-4">
-                        {{ Form::text('finish', Input::old('finish'), array('class'=>'form-control input-md', 'placeholder'=>'1')) }}
-                        <p class="alert-danger">{{ $errors->first('finish') }}</p>
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label class="col-md-4 control-label" for="decklist">Deck List</label>
                     <div class="col-md-4">
                         {{ Form::textarea('decklist', '', array('class'=>'form-control', 'rows'=>10, 'id'=>'decklist')) }}
                         <p class="alert-danger">{{ $errors->first() }}</p>
-                        <p class="help-block">One unique card per line. Skip a line to start sideboard. Example:</p>
-                        <p class="help-block">4 Thoughseize<br>56 Swamps<br><br>15 Forest</p>
+                        <p class="help-block">One unique card per line. Sideboard will automatically start after 60 cards.</p>
                     </div>
                 </div>
                 <div class="form-group">
@@ -58,4 +51,6 @@
             </div>
         </fieldset>
     {{ Form::token() . Form::close() }}
+
+
 @stop
