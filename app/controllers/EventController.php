@@ -68,7 +68,36 @@ class EventController extends \BaseController {
 	 */
 	public function show($slug)
 	{
-		return View::make('events.show')->with('events', Event::where('slug', '=', $slug)->with('decks')->get());
+        /*
+         * Would be a lot better if this would work with $event->cards where
+         * Event and Card are linked through Deck. Doesn't seem to work with many-to-many
+         */
+        $event = Event::where('slug', '=', $slug)->firstOrFail();
+        $results = Result::getAllResults($event->id);
+        // $event->decks all the decks from the event
+        $deck_ids = array();
+        foreach ($event->decks as $deck) {
+            array_push($deck_ids, $deck->id);
+        }
+
+        // all the cards from the event
+        //$cards_query = DB::table('cards_decks')->whereIn('deck_id', $deck_ids)->orderBy('amount', 'desc')->get();
+        $cards_query = DB::table('cards_decks')->whereIn('deck_id', $deck_ids)->select(DB::raw('sum(amount) as card_count, card_id'))
+            ->groupBy('card_id')->orderBy('card_count', 'desc')->get();
+
+        $card_amounts = array();
+        foreach ($cards_query as $card) {
+            $card_amounts[$card->card_id] = $card->card_count;
+        }
+
+        $cards = DB::table('cards')->whereIn('id', array_keys($card_amounts))->get();
+
+		return View::make('events.show')->with(array(
+            'event' => $event,                 /* the event, including decks */
+            'results' => $results,             /* results */
+            'cards' => $cards,                 /* all card used (Card objects) */
+            'card_amounts' => $card_amounts    /* id->amount for all cards used */
+        ));
 	}
 
 
@@ -78,9 +107,16 @@ class EventController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($id)
+	public function edit($slug)
 	{
-		//
+        $event = Event::where('slug', '=', $slug)->firstOrFail();
+        $results = Result::getAllResults($event->id);
+        $decks = Event::find($event->id)->with('decks');
+        return View::make('events.edit')->with(array(
+            'event' => $event,
+            'results' => $results,
+            'decks' => $decks
+        ));
 	}
 
 

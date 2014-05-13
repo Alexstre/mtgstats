@@ -31,12 +31,16 @@ class Card extends Eloquent {
 
     // IMAGES -------------------
     public static function grabImage($name) {
+        return "http://mtgimage.com/card/" . rawurlencode($name) . ".jpg";
+
+        // Using mtgimage hotlink for now, the site says they don't mind and I can't afford bandwidth!
+        /*
         $local = public_path() . "/images/" . $name . ".jpg";
         // We want to check if there's a local copy available, if not grab it from mtgimage.com 
         if (!file_exists('public/images/' . $name . '.jpg')) {
             $url = "http://mtgimage.com/card/" . rawurlencode($name) . ".jpg";
             copy($url, $local);
         }
-        return $local;
+        return $local;*/
     }
 }

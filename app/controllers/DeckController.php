@@ -12,7 +12,7 @@ class DeckController extends \BaseController {
 	 */
 	public function index()
 	{
-		$decks = Deck::all();
+		$decks = Deck::orderBy('id', 'desc')->paginate(10);
 		return $this->layout->content = View::make('decks.index')->with('decks', $decks);
 	}
 
@@ -52,10 +52,12 @@ class DeckController extends \BaseController {
     	}
 
     	else {
-    		$deck = Deck::create(array(
+    		$deck = new Deck(array(
     			'meta' => Input::get('meta'),
     			'player' => Input::get('player'),
     		));
+
+            $deck->save();
 
     		/* Pairing the deck with its cards */
     		$maindeck = true;
@@ -65,17 +67,32 @@ class DeckController extends \BaseController {
     			if (isset($card[1])) { 
     				$cardName = trim($card[1], "\r");
                     $cardCount = ($card[0] ? $card[0] : 1);
-    				$cardObj = Card::where('name', '=', $cardName)->take(1)->get(); // Probably not the best way to do this?
-    				if ($cardObj->count() == 0) { // Couldn't find the card abandon ship!
-    					$deck->delete();
-    					return Redirect::to('decks/create')->withInput()->withErrors(["Can't find " . $cardName]);
-    				}
-    				foreach($cardObj as $c) {  
-    					if ($cardsSoFar >= 60) $maindeck = false;
-    					$c->decks()->attach($deck->id, array('amount' => $card[0], 'maindeck' => $maindeck));
-    					$cardsSoFar += $cardCount;
-    				}
-    			}
+                    if ($cardsSoFar >= 60) $maindeck = false;
+                    // Support for dual cards like Tear // Wear
+                    if (str_contains($cardName, '//') ) {
+                        $bothSides = explode(' // ', $cardName);
+                        $bothCards = Card::where('name', '=', $bothSides[0])->orWhere('name', '=', $bothSides[1])
+                                            ->take(2)->get();
+
+                        if ($bothCards->count() !== 2) {
+                            $deck->delete();
+                            return Redirect::back()->withInput()->withErrors(["Can't find " . $cardNames]);
+                        }
+
+                        foreach ($bothCards as $side) {
+                            $side->decks()->attach($deck->id, array('amount' => $cardCount, 'maindeck' => $maindeck));
+                        }
+                    } // END dual cards
+                    else { // Good old regular card
+    				    $cardObj = Card::where('name', '=', $cardName)->take(1)->get();
+    				    if ($cardObj->count() == 0) { // Couldn't find the card abandon ship!
+    					    $deck->delete();
+    					    return Redirect::back()->withInput()->withErrors(["Can't find " . $cardName]);
+    				    }
+                        array_flatten($cardObj)[0]->decks()->attach($deck->id, array('amount' => $cardCount, 'maindeck' => $maindeck));
+    			    }
+                    $cardsSoFar += $cardCount;
+                }
     		}
 
     		/* Now we need to pair the event with the deck */
@@ -83,10 +100,8 @@ class DeckController extends \BaseController {
     		/* No need for as much validation here since the values are pulled from the DB */
     		$eventName = Input::get('event');
     		$eventObj = Event::where('name', '=', $eventName)->take(1)->get();
-    		foreach($eventObj as $e) {
-    			$deck->events()->attach($e->id, array('finish'=>Input::get('finish')));
-    		}
-
+            $e = array_flatten($eventObj)[0];
+    		$deck->events()->attach($e->id, array('finish'=>Input::get('finish')));
 
     		Session::flash('message', 'Sucess!');
     		return Redirect::to('decks');

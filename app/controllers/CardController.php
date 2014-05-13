@@ -26,7 +26,7 @@ class CardController extends \BaseController {
         $s = DB::table('cards')->join('cards_decks', 'cards.id', '=', 'card_id')
                                ->select('cards.*', DB::raw('Sum(Distinct cards_decks.amount) as total_card'))
                                ->groupBy('card_id')->orderBy('total_card', 'desc')
-                               ->take(20)->get(); // TODO: Add ->remember(60)
+                               ->take(60)->remember(60)->get(); // TODO: Add ->remember(60)
         $cardsInMeta = DB::table('cards_decks')->sum('amount');
 		foreach ($s as $b) {
 			//$c = Card::find($b->id); // The old way
@@ -44,6 +44,7 @@ class CardController extends \BaseController {
 		}
 
 		return $this->layout->content = View::make('cards.index')->with(array(
+            'pages' => $s,
             'cardsMeta' => $cardsInMeta,
 			'top15' => $top,
 			'images' => $cards_url,

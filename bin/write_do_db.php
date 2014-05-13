@@ -1,4 +1,10 @@
 <?php
+    function file_get_contents_utf8($fn) {
+        $content = file_get_contents($fn);
+        return mb_convert_encoding($content, 'UTF-8',
+            mb_detect_encoding($content, 'UTF-8, ISO-8859-1', true));
+    }
+
     $host = "localhost";
     $user = "root";
     $password = "root";
@@ -13,7 +19,7 @@
     
     foreach($sets as $set) {
         echo 'Adding ' . $set . '<br>';
-        $json_data = file_get_contents($set . '.json');
+        $json_data = file_get_contents_utf8($set . '.json');
         $cards = json_decode($json_data, true)['cards'];
         foreach($cards as $key => $value) {
             

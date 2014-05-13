@@ -20,7 +20,11 @@ class Event extends Eloquent implements SluggableInterface {
     // RELATIONSHIPS ----------------------------
     // Event has many Decks
     public function decks() {
-        return $this->belongsToMany('Deck', 'decks_events', 'event_id', 'deck_id', 'finish');
+        return $this->belongsToMany('Deck', 'decks_events', 'event_id', 'deck_id')->withPivot('finish')->orderBy('pivot_finish', 'asc');
+    }
+
+    public function cards() {
+        return $this->hasManyThrough('Card', 'cards_decks', 'id', 'card_id');
     }
 
 }

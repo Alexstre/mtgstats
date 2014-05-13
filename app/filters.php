@@ -40,7 +40,7 @@ Route::filter("auth", function () {
 });
 
 Route::filter("admin", function () {
-    if (! Auth::user()->admin) {
+    if (Auth::guest() || ! Auth::user()->admin) {
         return App::abort(401, 'Oh no you didn\'t');
     }
 });

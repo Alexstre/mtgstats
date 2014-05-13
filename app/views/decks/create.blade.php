@@ -8,13 +8,28 @@
                 Once it's added, the event will show up in the drop list below.</p>
             <div class="well">
                 <div class="form-group">
-                    <label class="col-md-4 control-label" for="meta">Archetype<br>(or new)</label>
+                    <label class="col-md-4 control-label" for="event">Event</label>
                     <div class="col-md-4">
                         {{ Form::select('event', $all_events, Input::old('event'), array('class'=>'form-control', 'id'=>'event')) }}
                         <p class="alert-danger">{{ $errors->first('meta') }}</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="meta">Archetype</label>
+                    <div class="col-md-4">
                         {{ Form::text('meta', Input::old('meta'), array('class'=>'form-control input-md', 'placeholder'=>'U/W Control')) }}
                         <p class="help-block">If you're adding an archetype that's not in the list, use this instead. Otherwise, leave empty.</p>
                         <p class="alert-danger">{{ $errors->first('meta') }}</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="meta">Finish</label>
+                    <div class="col-md-4">
+                        {{ Form::text('finish', Input::old('fini'), array('class'=>'form-control input-md', 'placeholder'=>'4')) }}
+                        <p class="help-block">Position in the Top 8/16. This can be modified later.</p>
+                        <p class="alert-danger">{{ $errors->first('finish') }}</p>
                     </div>
                 </div>
 
