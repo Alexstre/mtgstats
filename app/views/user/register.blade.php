@@ -1,7 +1,6 @@
-@extends("base")
+@extends("layouts.default")
+@section('title', 'Register')
 @section("content")
-<div class="col-md-10">
-    <div class="row">
         <div class="col-md-4 col-md-offset-4">
             <div class="login-wrapper">
                 <div class="box">
@@ -26,6 +25,5 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
+
 @stop

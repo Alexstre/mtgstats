@@ -4,7 +4,7 @@ use App\Event;
 
 class DeckController extends \BaseController {
 
-	protected $layout = "base";
+	protected $layout = "layouts.default";
 	/**
 	 * Display a listing of the resource.
 	 *
@@ -12,8 +12,18 @@ class DeckController extends \BaseController {
 	 */
 	public function index()
 	{
+        /* We want to get a general idea of the different archetypes. */
+        $arch_counts = array();
+        $arch = Deck::all()->groupBy('meta'); /* 'Some Meta' => array('decks') */
+        foreach ($arch as $key => $value) {
+            $arch_counts[$key] = count($value);
+        }
+        $exp = str_replace('}', ']', str_replace(':', ',', str_replace(',', '],[', str_replace('{', '[',json_encode($arch_counts)))));
 		$decks = Deck::orderBy('id', 'desc')->paginate(10);
-		return $this->layout->content = View::make('decks.index')->with('decks', $decks);
+		return $this->layout->content = View::make('decks.index')->with(array(
+            'decks' => $decks,
+            'arch' => $exp
+        ));
 	}
 
 
@@ -117,7 +127,10 @@ class DeckController extends \BaseController {
 	 */
 	public function show($slug)
 	{
-		return View::make('decks.show')->with('decks', Deck::where('slug', '=', $slug)->with('cards')->get());
+        $deck = Deck::where('slug', '=', $slug)->with('cards')->firstOrFail();
+		return View::make('decks.show')->with(array(
+            'deck' => $deck,
+        ));
 	}
 
 

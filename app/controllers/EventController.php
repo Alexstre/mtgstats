@@ -4,7 +4,7 @@ use App\Event;
 
 class EventController extends \BaseController {
 
-	protected $layout = "base";
+	//protected $layout = "layouts.default";
 	/**
 	 * Display a listing of the resource.
 	 *
